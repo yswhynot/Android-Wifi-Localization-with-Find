@@ -37,8 +37,8 @@ import com.android.volley.toolbox.Volley;
 
 public class MainActivity extends AppCompatActivity {
     // Constants
-    private static final String URL_STRING = "158.132.237.122:8003";
-    private static final String GROUP = "CRESENDO";
+    private static final String URL_STRING = "http://158.132.237.122:8003";
+    private static final String GROUP = "CRESCENDO";
     private static final String USERNAME = "YISHA";
 
     @Override
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 if(obj != null) {
                     JSONObject fingerprint = getFingerprint(obj);
                     sendData(fingerprint);
+//                    getLocation();
                 }
             }
         });
@@ -73,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
                 tmp_json = network_data.getJSONObject(i);
 
                 JSONObject ap = new JSONObject();
-                ap.put("mac", tmp_json.getJSONObject("BSSID"));
-                ap.put("rssi", tmp_json.getJSONObject("level"));
+                ap.put("mac", tmp_json.getString("BSSID"));
+                ap.put("rssi", tmp_json.getInt("level"));
 
                 result_fp.put(ap);
             }
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
             result.put("time", (new Date()).getTime());
             result.put("wifi-fingerprint", result_fp);
 
+//            Log.d("mainlog", "Result: " + result);
             return result;
 
         } catch (JSONException e) {
@@ -98,19 +100,21 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = URL_STRING + "/track";
 
+        Log.d("mainlog", "Track obj: " + obj);
+
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
                 Request.Method.POST, url, obj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("main", response.toString());
+                        Log.d("mainlog", response.toString());
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        VolleyLog.d("main", "Error: " + error.getMessage());
+                        VolleyLog.d("mainlog", "Error: " + error.getMessage());
                     }
                 }) {
             // Passing some request headers
@@ -134,12 +138,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        Log.d("main", "Get: response is: "+ response.substring(0,500));
+                        Log.d("mainlog", "Get: response is: "+ response.substring(0,500));
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("main", "Get didn't work!");
+                Log.d("mainlog", "Get didn't work!");
             }
         });
         // Add the request to the RequestQueue.
