@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private void sendData(JSONObject obj) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = URL_STRING;
+        String url = URL_STRING + "/track";
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
@@ -121,6 +121,29 @@ public class MainActivity extends AppCompatActivity {
                 return headers;
             }
         };
+        queue.add(jsonObjReq);
+    }
+
+    private void getLocation() {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = URL_STRING + "?group=" + GROUP + "&username=" + USERNAME;
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        Log.d("main", "Get: response is: "+ response.substring(0,500));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("main", "Get didn't work!");
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     private JSONObject startTracking() {
